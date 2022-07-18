@@ -1,0 +1,63 @@
+name: "FTP Deploy"
+description: ""
+inputs:
+  source:
+    description: "Source folder (already built)"
+    required: false
+    default: 'source'
+  target:
+    description: "Target folder (already built)"
+    required: false
+    default: 'target'
+  env-type:
+    description: "Env Type"
+    required: false
+    default: 'sftp'
+  env-host:
+    description: "Env Host"
+    required: true
+    default: ''
+  env-port:
+    description: "Env Port"
+    required: true
+    default: ''
+  env-user:
+    description: "Env User"
+    required: true
+    default: ''
+  env-pass:
+    description: "Env Password"
+    required: true
+    default: ''
+  env-remote-root:
+    description: "Env Remote Root"
+    required: true
+    default: ''
+  env-local-root:
+    description: "Env Local Root"
+    required: true
+    default: ''
+runs:
+  using: "composite"
+  steps:
+    - name: Path Setup
+      shell: bash
+      run: echo "${{ github.action_path }}" >> $GITHUB_PATH
+
+    - name: Compare
+      id: compare
+      shell: bash
+      run: compose-manifest.sh "${{ inputs.source }}" "${{ inputs.target }}" "deploy.manifest";
+
+    - uses: actions/setup-node@v3
+      if: ${{ steps.compare.outputs.is-empty != 'true' }}
+      with:
+        node-version: 16
+
+    - name: Deploy
+      if: ${{ steps.compare.outputs.is-empty != 'true' }}
+      shell: bash
+      run: |
+        npm i -g saucal/ftp-deployment
+        ftp-deployment-cli --type="${{ inputs.env-type }}" --host="${{ inputs.env-host }}" --port="${{ inputs.env-port }}" --user="${{ inputs.env-user }}" --pass="${{ inputs.env-pass }}" --remote-root="${{ inputs.env-remote-root }}" --local-root="${{ inputs.target }}" "deploy.manifest"
+
