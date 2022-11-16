@@ -1,14 +1,6 @@
 name: "FTP Deploy"
 description: ""
 inputs:
-  source:
-    description: "Source folder (already built)"
-    required: false
-    default: 'source'
-  target:
-    description: "Target folder (already built)"
-    required: false
-    default: 'target'
   env-type:
     description: "Env Type"
     required: false
@@ -40,15 +32,6 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - name: Path Setup
-      shell: bash
-      run: echo "${{ github.action_path }}" >> $GITHUB_PATH
-
-    - name: Compare
-      id: compare
-      shell: bash
-      run: compose-manifest.sh "${{ inputs.source }}" "${{ inputs.target }}" "deploy.manifest";
-
     - uses: actions/setup-node@v3
       if: ${{ steps.compare.outputs.is-empty != 'true' }}
       with:
