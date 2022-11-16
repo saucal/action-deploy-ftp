@@ -15,8 +15,8 @@ rsync --dry-run -rci --delete --existing --ignore-existing "${TARGET_DIR}/" "${S
 
 if [ -s "${DETAILS_FILE}" ]; then
 	cat "${DETAILS_FILE}"
-	echo "::set-output name=is-empty::false"
+	echo "is-empty=false" >> "$GITHUB_OUTPUT"
 else
-	echo "::set-output name=is-empty::true"
+	echo "is-empty=true" >> "$GITHUB_OUTPUT"
 fi
 
