@@ -29,6 +29,10 @@ inputs:
     description: "Env Local Root"
     required: true
     default: ''
+  manifest:
+    description: "Manifest of files to upload/remove"
+    required: true
+    default: ''
 runs:
   using: 'node16'
   main: 'main.js'
