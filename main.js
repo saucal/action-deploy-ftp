@@ -40,7 +40,9 @@
 	client
 		.maybeConnect()
 		.then( function() {
-			return client.process( readData() );
+			return client.process( readData(), {
+				ignore: core.getInput('force-ignore', { required: false })
+			} );
 		} )
 		.then( function() {
 			return client.end()

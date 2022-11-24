@@ -33,6 +33,10 @@ inputs:
     description: "Manifest of files to upload/remove"
     required: true
     default: ''
+  force-ignore:
+    description: "Ignore files on deployment"
+    required: false
+    default: ''
 runs:
   using: 'node16'
   main: 'main.js'
