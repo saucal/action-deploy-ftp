@@ -4,6 +4,7 @@
 
 	const core = require('@actions/core');
 	const path = require('path');
+	const fs = require('fs');
 	const ftpClient = require('ftp-deployment/client');
 
 	class cliFTPClient extends ftpClient {
