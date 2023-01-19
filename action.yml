@@ -82,7 +82,7 @@ runs:
           operation="${line::1}"
           file="${line:2}"
           if [ "${operation}" == "+" ]; then
-            dir=$(${GITHUB_WORKSPACE}/remote/${file})
+            dir=$(dirname "${GITHUB_WORKSPACE}/remote/${file}")
             if [ ! -d "${dir}" ]; then
               echo "mkdir -p '${dir}'"
               mkdir -p "${dir}"
