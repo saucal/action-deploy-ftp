@@ -76,6 +76,13 @@ runs:
 
         while read line; do
           echo $line;
+          operation="${line::1}"
+          file="${line:2}"
+          if [ "${operation}" == "+" ]; then
+            echo "cp ${{ inputs.env-local-root }}/${file}"
+          else
+            echo "rm ${{ inputs.env-local-root }}/${file}"
+          fi
         done < "${GITHUB_WORKSPACE}/file.manifest"
 
         ls -al "${GITHUB_WORKSPACE}/remote"
