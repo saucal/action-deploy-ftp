@@ -57,5 +57,7 @@ runs:
           echo "pass = ${SECURE_PASS}"
         } > "$HOME/.config/rclone/rclone.conf"
 
+        cat "$HOME/.config/rclone/rclone.conf"
+
         rclone lsf "${{ inputs.env-type }}:/www/quantum_720/private" --max-depth 1
 
