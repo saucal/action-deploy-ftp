@@ -45,6 +45,8 @@ runs:
       run: |
         curl https://rclone.org/install.sh | sudo bash
 
+        SECURE_PASS=$(echo "${{ inputs.env-pass }}" | rclone obscure -)
+
         mkdir -p "$HOME/.config/rclone"
         {
           echo "[${{ inputs.env-type }}]"
@@ -52,8 +54,8 @@ runs:
           echo "host = ${{ inputs.env-host }}"
           echo "port = ${{ inputs.env-port }}"
           echo "user = ${{ inputs.env-user }}"
-          echo "pass = ${{ inputs.env-pass }}"
+          echo "pass = ${SECURE_PASS}"
         } > "$HOME/.config/rclone/rclone.conf"
 
-        FILE=$(rclone config file)
+        rclone lsf "${{ inputs.env-type }}:/www/quantum_720/private" --max-depth 1
 
