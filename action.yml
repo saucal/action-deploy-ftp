@@ -88,10 +88,10 @@ runs:
               mkdir -p "${dir}"
             fi
             echo "cp '${{ inputs.env-local-root }}/${file}' '${GITHUB_WORKSPACE}/remote/${file}'"
-            cp "${{ inputs.env-local-root }}/${file}" "${GITHUB_WORKSPACE}/remote/${file}""
+            cp "${{ inputs.env-local-root }}/${file}" "${GITHUB_WORKSPACE}/remote/${file}"
           else
-            echo "rm ${GITHUB_WORKSPACE}/remote/${file}"
-            rm ${GITHUB_WORKSPACE}/remote/${file}
+            echo "rm '${GITHUB_WORKSPACE}/remote/${file}'"
+            rm "${GITHUB_WORKSPACE}/remote/${file}"
             
             ## TODO: Recurse into removing empty directories
           fi
