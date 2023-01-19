@@ -44,9 +44,15 @@ runs:
       shell: bash
       run: |
         curl https://rclone.org/install.sh | sudo bash
+
+        {
+          echo "[quantum]"
+          echo "type = ${input.env-type}"
+          echo "host = ${input.env-host}"
+          echo "port = ${input.env-port}"
+          echo "user = ${input.env-user}"
+          echo "pass = ${input.env-pass}"
+        } > "$HOME/.config/rclone/rclone.conf"
+
         FILE=$(rclone config file)
-        echo $FILE
-        echo $FILE
-        echo $FILE
-        echo $FILE
 
