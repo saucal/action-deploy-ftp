@@ -82,9 +82,18 @@ runs:
           operation="${line::1}"
           file="${line:2}"
           if [ "${operation}" == "+" ]; then
-            echo "cp ${{ inputs.env-local-root }}/${file}"
+            dir=$(${GITHUB_WORKSPACE}/remote/${file})
+            if [ ! -d "${dir}" ]; then
+              echo "mkdir -p '${dir}'"
+              mkdir -p "${dir}"
+            fi
+            echo "cp '${{ inputs.env-local-root }}/${file}' '${GITHUB_WORKSPACE}/remote/${file}'"
+            cp "${{ inputs.env-local-root }}/${file}" "${GITHUB_WORKSPACE}/remote/${file}""
           else
-            echo "rm ${{ inputs.env-local-root }}/${file}"
+            echo "rm ${GITHUB_WORKSPACE}/remote/${file}"
+            rm ${GITHUB_WORKSPACE}/remote/${file}
+            
+            ## TODO: Recurse into removing empty directories
           fi
         done < "${GITHUB_WORKSPACE}/file.manifest"
 
