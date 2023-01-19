@@ -59,6 +59,8 @@ runs:
 
         rclone mkdir "remote:${{ inputs.env-remote-path }}"
 
+        mkdir -p "${GITHUB_WORKSPACE}/remote"
+
         rclone mount "remote:${{ inputs.env-remote-path }}" "${GITHUB_WORKSPACE}/remote"
 
         ls "${GITHUB_WORKSPACE}/remote"
