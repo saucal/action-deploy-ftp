@@ -49,7 +49,7 @@ runs:
 
         mkdir -p "$HOME/.config/rclone"
         {
-          echo "[${{ inputs.env-type }}]"
+          echo "[remote]"
           echo "type = ${{ inputs.env-type }}"
           echo "host = ${{ inputs.env-host }}"
           echo "port = ${{ inputs.env-port }}"
@@ -57,7 +57,10 @@ runs:
           echo "pass = ${SECURE_PASS}"
         } > "$HOME/.config/rclone/rclone.conf"
 
-        rclone mkdir "${{ inputs.env-type }}:${{ inputs.env-remote-path }}"
+        rclone mkdir "remote:${{ inputs.env-remote-path }}"
 
-        rclone ls "${{ inputs.env-type }}:/www/quantum_720/private" --max-depth 1
+        rclone mount "remote:${{ inputs.env-remote-path }}" "${GITHUB_WORKSPACE}/remote"
+
+        ls "${GITHUB_WORKSPACE}/remote"
+
 
