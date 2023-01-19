@@ -57,11 +57,15 @@ runs:
           echo "pass = ${SECURE_PASS}"
         } > "$HOME/.config/rclone/rclone.conf"
 
-        rclone mkdir "remote:${{ inputs.env-remote-path }}"
+        rclone mkdir "remote:${{ inputs.env-remote-root }}"
 
         mkdir -p "${GITHUB_WORKSPACE}/remote"
 
-        rclone mount "remote:${{ inputs.env-remote-path }}" "${GITHUB_WORKSPACE}/remote" --daemon
+        rclone mount "remote:${{ inputs.env-remote-root }}" "${GITHUB_WORKSPACE}/remote" --daemon --allow-other
+
+        ls -al "${GITHUB_WORKSPACE}/remote"
+
+        echo "test" > "${GITHUB_WORKSPACE}/remote"
 
         ls -al "${GITHUB_WORKSPACE}/remote"
 
