@@ -63,9 +63,20 @@ runs:
 
         rclone mount "remote:${{ inputs.env-remote-root }}" "${GITHUB_WORKSPACE}/remote" --daemon
 
-        ls -al "${GITHUB_WORKSPACE}/remote"
-
         echo "test" > "${GITHUB_WORKSPACE}/remote/file"
+
+        echo "${{ inputs.manifest }}" > "${GITHUB_WORKSPACE}/file.manifest"
+
+        while read line; do
+          if [ "${line::1}" != "+" ] && [ "${line::1}" != "-" ]; then
+            cat "$line" > "${GITHUB_WORKSPACE}/file.manifest"
+          fi
+          break;
+        done < "${GITHUB_WORKSPACE}/file.manifest"
+
+        while read line; do
+          echo $line;
+        done < "${GITHUB_WORKSPACE}/file.manifest"
 
         ls -al "${GITHUB_WORKSPACE}/remote"
 
