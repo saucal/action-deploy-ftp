@@ -63,10 +63,10 @@ runs:
 
         rclone mount "remote:${{ inputs.env-remote-root }}" "${GITHUB_WORKSPACE}/remote" --daemon --allow-other
 
-        ls -al "${GITHUB_WORKSPACE}/remote"
+        ls "${GITHUB_WORKSPACE}/remote"
 
         echo "test" > "${GITHUB_WORKSPACE}/remote/file"
 
-        ls -al "${GITHUB_WORKSPACE}/remote"
+        ls "${GITHUB_WORKSPACE}/remote"
 
 
