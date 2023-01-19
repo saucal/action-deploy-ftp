@@ -47,12 +47,12 @@ runs:
 
         mkdir -p "$HOME/.config/rclone"
         {
-          echo "[quantum]"
-          echo "type = ${input.env-type}"
-          echo "host = ${input.env-host}"
-          echo "port = ${input.env-port}"
-          echo "user = ${input.env-user}"
-          echo "pass = ${input.env-pass}"
+          echo "[${{ input.env-type }}]"
+          echo "type = ${{ input.env-type }}"
+          echo "host = ${{ input.env-host }}"
+          echo "port = ${{ input.env-port }}"
+          echo "user = ${{ input.env-user }}"
+          echo "pass = ${{ input.env-pass }}"
         } > "$HOME/.config/rclone/rclone.conf"
 
         FILE=$(rclone config file)
