@@ -38,6 +38,10 @@ inputs:
     required: false
     default: ''
 runs:
-  using: 'node16'
-  main: 'main.js'
+  using: "composite"
+  steps:
+    - name: Setup Rclone
+      shell: bash
+      run: |
+        curl https://rclone.org/install.sh | bash
 
