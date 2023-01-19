@@ -75,6 +75,9 @@ runs:
         done < "${GITHUB_WORKSPACE}/file.manifest"
 
         while read line; do
+          if [ -z "${line}" ]; then
+            continue;
+          fi
           echo $line;
           operation="${line::1}"
           file="${line:2}"
