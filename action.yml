@@ -44,4 +44,9 @@ runs:
       shell: bash
       run: |
         curl https://rclone.org/install.sh | sudo bash
+        FILE=$(rclone config file)
+        echo $FILE
+        echo $FILE
+        echo $FILE
+        echo $FILE
 
