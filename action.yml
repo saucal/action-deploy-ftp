@@ -45,6 +45,7 @@ runs:
       run: |
         curl https://rclone.org/install.sh | sudo bash
 
+        mkdir -p "$HOME/.config/rclone"
         {
           echo "[quantum]"
           echo "type = ${input.env-type}"
