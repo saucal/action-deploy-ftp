@@ -10,8 +10,6 @@ function maybe_skip() {
 		echo "$INPUT_FORCE_IGNORE" > ".gitignore"
 	fi
 	cd "${GITHUB_WORKSPACE}/remote-ignore"
-	pwd 
-	ls -al "${GITHUB_WORKSPACE}/remote-ignore"
 	git --work-tree="${GITHUB_WORKSPACE}/remote-ignore" check-ignore -q --no-index "$1"
 	status=$?
 	cd "$OLD_PWD"
