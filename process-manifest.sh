@@ -28,23 +28,38 @@ function process_line() {
 	if [ "${operation}" == "*" ]; then
 		if [ ! -d "${local_remote_file}" ]; then
 			echo "mkdir -p '${local_remote_file}'"
-			mkdir -p "${local_remote_file}"
+			mkdir -p "${local_remote_file}" || return 1
 		fi
 	elif [ "${operation}" == "+" ]; then
 		echo "cp -f '${local_file}' '${local_remote_file}'"
-		cp -f "${local_file}" "${local_remote_file}"
+		cp -f "${local_file}" "${local_remote_file}" || return 1
 	elif [ "${operation}" == "-" ]; then
 		echo "rm -f '${local_remote_file}'"
-		rm -f "${local_remote_file}"
+		rm -f "${local_remote_file}" || return 1
 	elif [ "${operation}" == "_" ]; then
 		if [ -z "$(ls -A "$local_remote_file")" ]; then
 			echo "rm -rf '${local_remote_file}'"
-			rm -rf "${local_remote_file}"
+			rm -rf "${local_remote_file}" || return 1
 		fi
 	fi
 }
 
+function handle_sigchld() {
+    for PID in "${!PIDS[@]}"; do
+        if [ ! -d "/proc/$PID" ]; then
+            wait "$PID"
+            CODE=$?
+			if [ $CODE -ne 0 ]; then
+				exit "$CODE"
+			fi
+            unset "PIDS[$PID]"
+        fi
+    done
+}
+
 JOBS_LIMIT=${INPUT_CONCURRENT_CONNECTIONS}
+PIDS=()
+trap handle_sigchld SIGCHLD
 
 function spawn_process_line() {
 	while [ "$(jobs -rp | wc -l)" -ge $JOBS_LIMIT ]; do
@@ -52,6 +67,7 @@ function spawn_process_line() {
     done
 	line="$1"
 	process_line "$line" &
+	PIDS[$!]=1
 }
 
 declare -A pathsToCreate
