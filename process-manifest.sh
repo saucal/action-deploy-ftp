@@ -1,17 +1,19 @@
 #!/usr/bin/env bash
 
 function maybe_skip() {
+	OLD_PWD=$(pwd)
 	if [ ! -d "${GITHUB_WORKSPACE}/remote-ignore" ]; then
-		OLD_PWD=$(pwd)
 		mkdir -p "${GITHUB_WORKSPACE}/remote-ignore"
 		cd "${GITHUB_WORKSPACE}/remote-ignore"
 		git init
 		git checkout --orphan orphan_name
 		echo "$INPUT_FORCE_IGNORE" > ".gitignore"
-		cd "$OLD_PWD"
 	fi
+	pwd 
+	ls -al "${GITHUB_WORKSPACE}/remote-ignore"
 	git --work-tree="${GITHUB_WORKSPACE}/remote-ignore" check-ignore -q --no-index "$1"
 	status=$?
+	cd "$OLD_PWD"
 	if [ $status -eq 1 ]; then
 		return 0;
 	else
