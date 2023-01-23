@@ -2,16 +2,20 @@
 
 function maybe_skip() {
 	if [ ! -d "${GITHUB_WORKSPACE}/remote-ignore" ]; then
+		OLD_PWD=$(pwd)
 		mkdir -p "${GITHUB_WORKSPACE}/remote-ignore"
-		git --bare init "${GITHUB_WORKSPACE}/remote-ignore/.git"
-		echo "$INPUT_FORCE_IGNORE" > "${GITHUB_WORKSPACE}/remote-ignore/.gitignore"
+		cd "${GITHUB_WORKSPACE}/remote-ignore"
+		git init
+		git checkout --orphan orphan_name
+		echo "$INPUT_FORCE_IGNORE" > ".gitignore"
+		cd "$OLD_PWD"
 	fi
 	git --work-tree="${GITHUB_WORKSPACE}/remote-ignore" check-ignore -q --no-index "$1"
 	status=$?
 	if [ $status -eq 1 ]; then
-		echo 0;
+		return 0;
 	else
-		echo 1;
+		return 1;
 	fi
 }
 
@@ -19,9 +23,11 @@ function process_line() {
 	line="$1"
 	operation="${line::1}"
 	file="${line:2}"
-	if [ "$(maybe_skip "$file")" = "1" ]; then
+	maybe_skip "$file"
+	ret="$?"
+	if [ "$ret" -eq 1 ]; then
 		echo "skipping $file"
-		return;
+		return 0;
 	fi
 	local_remote_file="${GITHUB_WORKSPACE}/remote/${file}"
 	local_file="${INPUT_ENV_LOCAL_ROOT}/${file}"
