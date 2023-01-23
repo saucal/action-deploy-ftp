@@ -99,25 +99,25 @@ mapfile -d '' uploads < <(printf '%s\0' "${!uploads[@]}" | sort -z)
 mapfile -d '' removals < <(printf '%s\0' "${!removals[@]}" | sort -z)
 mapfile -d '' pathsToCleanup < <(printf '%s\0' "${!pathsToCleanup[@]}" | sort -z)
 
-for dir in "${pathsToCreate[@]}"; do
+for dir in "${!pathsToCreate[@]}"; do
 	spawn_process_line "* ${dir}"
 done
 wait
 echo "Finished preparing directory tree"
 
-for file in "${uploads[@]}"; do
+for file in "${!uploads[@]}"; do
 	spawn_process_line "+ ${file}"
 done
 wait
 echo "Finished uploads"
 
-for file in "${removals[@]}"; do
+for file in "${!removals[@]}"; do
 	spawn_process_line "- ${file}"
 done
 wait
 echo "Finished removals"
 
-for dir in "${pathsToCleanup[@]}"; do
+for dir in "${!pathsToCleanup[@]}"; do
 	spawn_process_line "_ ${dir}"
 done
 wait
