@@ -61,6 +61,7 @@ runs:
         INPUT_ENV_PASS: ${{ inputs.env-pass }}
         INPUT_ENV_REMOTE_ROOT: ${{ inputs.env-remote-root }}
         INPUT_ENV_LOCAL_ROOT: ${{ inputs.env-local-root }}
+        INPUT_FORCE_IGNORE: ${{ inputs.force-ignore }}
         INPUT_MANIFEST: ${{ inputs.manifest }}
         INPUT_CONCURRENT_CONNECTIONS: ${{ inputs.concurrent-connections }}
       run: "${{ github.action_path }}/run.sh"

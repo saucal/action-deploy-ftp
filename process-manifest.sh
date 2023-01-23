@@ -1,9 +1,27 @@
 #!/usr/bin/env bash
 
+function maybe_skip() {
+	if [ ! -d "${GITHUB_WORKSPACE}/remote-ignore" ]; then
+		mkdir -p "${GITHUB_WORKSPACE}/remote-ignore"
+		echo "$INPUT_FORCE_IGNORE" > "${GITHUB_WORKSPACE}/remote-ignore/.gitignore"
+	fi
+	git --work-tree="${GITHUB_WORKSPACE}/remote-ignore" check-ignore -q --no-index "$1"
+	status=$?
+	if [ $status -eq 1 ]; then
+		echo 0;
+	else
+		echo 1;
+	fi
+}
+
 function process_line() {
 	line="$1"
 	operation="${line::1}"
 	file="${line:2}"
+	if [ "$(maybe_skip "$file")" = "1" ]; then
+		echo "skipping $file"
+		return;
+	fi
 	local_remote_file="${GITHUB_WORKSPACE}/remote/${file}"
 	local_file="${INPUT_ENV_LOCAL_ROOT}/${file}"
 	if [ "${operation}" == "*" ]; then
