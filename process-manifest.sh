@@ -78,7 +78,7 @@ mapfile -t orderedRemovals < <(sortPaths "${!removals[@]}")
 mapfile -t orderedPathsToCleanup < <(sortPaths "${!pathsToCleanup[@]}")
 
 for dir in "${orderedPathsToCreate[@]}"; do
-	spawn_process_line "* ${dir}"
+	process_line "* ${dir}"
 done
 wait
 echo "Finished preparing directory tree"
@@ -96,7 +96,7 @@ wait
 echo "Finished removals"
 
 for dir in "${orderedPathsToCleanup[@]}"; do
-	spawn_process_line "_ ${dir}"
+	process_line "_ ${dir}"
 done
 wait
 echo "Finished cleanup of directory tree"
