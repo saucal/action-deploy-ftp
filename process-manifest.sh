@@ -2,25 +2,26 @@
 
 function process_line() {
 	line="$1"
-	echo "$line"
-	return;
 	operation="${line::1}"
 	file="${line:2}"
+	local_remote_file="${GITHUB_WORKSPACE}/remote/${file}"
+	local_file="${INPUT_ENV_LOCAL_ROOT}/${file}"
 	if [ "${operation}" == "*" ]; then
-		dir="${GITHUB_WORKSPACE}/remote/${file}"
-		if [ ! -d "${dir}" ]; then
-			echo "mkdir -p '${dir}'"
-			mkdir -p "${dir}"
+		if [ ! -d "${local_remote_file}" ]; then
+			echo "mkdir -p '${local_remote_file}'"
+			mkdir -p "${local_remote_file}"
 		fi
 	elif [ "${operation}" == "+" ]; then
-		echo "cp -f '${INPUT_ENV_LOCAL_ROOT}/${file}' '${GITHUB_WORKSPACE}/remote/${file}'"
-		cp -f "${INPUT_ENV_LOCAL_ROOT}/${file}" "${GITHUB_WORKSPACE}/remote/${file}"
+		echo "cp -f '${local_file}' '${local_remote_file}'"
+		cp -f "${local_file}" "${local_remote_file}"
 	elif [ "${operation}" == "-" ]; then
-		echo "rm -f '${GITHUB_WORKSPACE}/remote/${file}'"
-		rm -f "${GITHUB_WORKSPACE}/remote/${file}"
+		echo "rm -f '${local_remote_file}'"
+		rm -f "${local_remote_file}"
 	elif [ "${operation}" == "_" ]; then
-		echo "dircleanup -f '${file}'"
-		## TODO: Recurse into removing empty directories
+		if [ -z "$(ls -A "$local_remote_file")" ]; then
+			echo "rm -rf '${local_remote_file}'"
+			rm -rf "${local_remote_file}"
+		fi
 	fi
 }
 
