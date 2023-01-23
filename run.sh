@@ -15,7 +15,7 @@ rclone mkdir "remote:${INPUT_ENV_REMOTE_ROOT}"
 
 mkdir -p "${GITHUB_WORKSPACE}/remote"
 
-rclone mount "remote:${INPUT_ENV_REMOTE_ROOT}" "${GITHUB_WORKSPACE}/remote" --daemon
+rclone mount "remote:${INPUT_ENV_REMOTE_ROOT}" "${GITHUB_WORKSPACE}/remote" --daemon --log-file="${GITHUB_WORKSPACE}/rclone.log" -vv
 
 echo "test" > "${GITHUB_WORKSPACE}/remote/file"
 
@@ -69,3 +69,4 @@ done < "${GITHUB_WORKSPACE}/file.manifest"
 wait
 
 ls -al "${GITHUB_WORKSPACE}/remote"
+cat "${GITHUB_WORKSPACE}/rclone.log"
