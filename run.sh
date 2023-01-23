@@ -34,28 +34,38 @@ rm -f "${GITHUB_WORKSPACE}/file.manifest_input"
 
 ## TODO: Do removals at the end
 
+JOBS_LIMIT=5
+
 while read -r line; do
 	if [ -z "${line}" ]; then
 		continue;
 	fi
-	echo "$line";
-	continue;
-	operation="${line::1}"
-	file="${line:2}"
-	if [ "${operation}" == "+" ]; then
-		dir=$(dirname "${GITHUB_WORKSPACE}/remote/${file}")
-		if [ ! -d "${dir}" ]; then
-			echo "mkdir -p '${dir}'"
-			mkdir -p "${dir}"
+	while [ "$(jobs -rp | wc -l)" -ge $JOBS_LIMIT ]; do
+        sleep 1
+    done
+
+	{
+		echo "Processing file $line";
+		operation="${line::1}"
+		file="${line:2}"
+		if [ "${operation}" == "+" ]; then
+			dir=$(dirname "${GITHUB_WORKSPACE}/remote/${file}")
+			if [ ! -d "${dir}" ]; then
+				echo "mkdir -p '${dir}'"
+				mkdir -p "${dir}"
+			fi
+			echo "cp -f '${INPUT_ENV_LOCAL_ROOT}/${file}' '${GITHUB_WORKSPACE}/remote/${file}'"
+			cp -f "${INPUT_ENV_LOCAL_ROOT}/${file}" "${GITHUB_WORKSPACE}/remote/${file}"
+		else
+			echo "rm -f '${GITHUB_WORKSPACE}/remote/${file}'"
+			rm -f "${GITHUB_WORKSPACE}/remote/${file}"
+			
+			## TODO: Recurse into removing empty directories
 		fi
-		echo "cp -f '${INPUT_ENV_LOCAL_ROOT}/${file}' '${GITHUB_WORKSPACE}/remote/${file}'"
-		cp -f "${INPUT_ENV_LOCAL_ROOT}/${file}" "${GITHUB_WORKSPACE}/remote/${file}"
-	else
-		echo "rm -f '${GITHUB_WORKSPACE}/remote/${file}'"
-		rm -f "${GITHUB_WORKSPACE}/remote/${file}"
-		
-		## TODO: Recurse into removing empty directories
-	fi
+		echo "Finished file $line";
+	} &
 done < "${GITHUB_WORKSPACE}/file.manifest"
+
+wait
 
 ls -al "${GITHUB_WORKSPACE}/remote"
