@@ -59,12 +59,25 @@ function process_line() {
 	fi
 }
 
+JOBS_LIMIT=5
+
+function spawn_process_line() {
+	while [ "$(jobs -rp | wc -l)" -ge $JOBS_LIMIT ]; do
+        sleep 1
+    done
+	line="$1"
+	process_line "$line" &
+}
+
 declare -A pathsToCreate
 declare -A uploads
 declare -A removals
 declare -A pathsToCleanup
 
 while read -r line; do
+	if [ -z "${line}" ]; then
+		continue;
+	fi
 	operation="${line::1}"
 	file="${line:2}"
 	path="$(dirname "${file}")"
@@ -81,37 +94,24 @@ while read -r line; do
 	fi
 done < "${GITHUB_WORKSPACE}/file.manifest"
 
-rm -f "${GITHUB_WORKSPACE}/file.manifest"
-
 for dir in "${!pathsToCreate[@]}"; do
-	echo "* ${dir}" >> "${GITHUB_WORKSPACE}/file.manifest"
+	spawn_process_line "* ${dir}"
 done
+wait
 
 for file in "${!uploads[@]}"; do
-	echo "+ ${file}" >> "${GITHUB_WORKSPACE}/file.manifest"
+	spawn_process_line "+ ${file}"
 done
+wait
 
 for file in "${!removals[@]}"; do
-	echo "- ${file}" >> "${GITHUB_WORKSPACE}/file.manifest"
+	spawn_process_line "- ${file}"
 done
+wait
 
 for dir in "${!pathsToCleanup[@]}"; do
-	echo "_ ${dir}" >> "${GITHUB_WORKSPACE}/file.manifest"
+	spawn_process_line "_ ${dir}"
 done
-
-JOBS_LIMIT=5
-
-while read -r line; do
-	if [ -z "${line}" ]; then
-		continue;
-	fi
-	while [ "$(jobs -rp | wc -l)" -ge $JOBS_LIMIT ]; do
-        sleep 1
-    done
-
-	process_line "$line" &
-done < "${GITHUB_WORKSPACE}/file.manifest"
-
 wait
 
 ls -al "${GITHUB_WORKSPACE}/remote"
