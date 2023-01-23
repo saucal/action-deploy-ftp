@@ -42,61 +42,20 @@ runs:
   steps:
     - name: Setup Rclone
       shell: bash
-      run: |
-        curl https://rclone.org/install.sh | sudo bash
+      run: curl https://rclone.org/install.sh | sudo bash
 
-        SECURE_PASS=$(echo "${{ inputs.env-pass }}" | rclone obscure -)
-
-        mkdir -p "$HOME/.config/rclone"
-        {
-          echo "[remote]"
-          echo "type = ${{ inputs.env-type }}"
-          echo "host = ${{ inputs.env-host }}"
-          echo "port = ${{ inputs.env-port }}"
-          echo "user = ${{ inputs.env-user }}"
-          echo "pass = ${SECURE_PASS}"
-        } > "$HOME/.config/rclone/rclone.conf"
-
-        rclone mkdir "remote:${{ inputs.env-remote-root }}"
-
-        mkdir -p "${GITHUB_WORKSPACE}/remote"
-
-        rclone mount "remote:${{ inputs.env-remote-root }}" "${GITHUB_WORKSPACE}/remote" --daemon
-
-        echo "test" > "${GITHUB_WORKSPACE}/remote/file"
-
-        echo "${{ inputs.manifest }}" > "${GITHUB_WORKSPACE}/file.manifest"
-
-        while read line; do
-          if [ "${line::1}" != "+" ] && [ "${line::1}" != "-" ]; then
-            cat "$line" > "${GITHUB_WORKSPACE}/file.manifest"
-          fi
-          break;
-        done < "${GITHUB_WORKSPACE}/file.manifest"
-
-        while read line; do
-          if [ -z "${line}" ]; then
-            continue;
-          fi
-          echo $line;
-          operation="${line::1}"
-          file="${line:2}"
-          if [ "${operation}" == "+" ]; then
-            dir=$(dirname "${GITHUB_WORKSPACE}/remote/${file}")
-            if [ ! -d "${dir}" ]; then
-              echo "mkdir -p '${dir}'"
-              mkdir -p "${dir}"
-            fi
-            echo "cp -f '${{ inputs.env-local-root }}/${file}' '${GITHUB_WORKSPACE}/remote/${file}'"
-            cp -f "${{ inputs.env-local-root }}/${file}" "${GITHUB_WORKSPACE}/remote/${file}"
-          else
-            echo "rm -f '${GITHUB_WORKSPACE}/remote/${file}'"
-            rm -f "${GITHUB_WORKSPACE}/remote/${file}"
-            
-            ## TODO: Recurse into removing empty directories
-          fi
-        done < "${GITHUB_WORKSPACE}/file.manifest"
-
-        ls -al "${GITHUB_WORKSPACE}/remote"
+    - name: Run upload
+      shell: bash
+      env:
+        INPUT_ENV_TYPE: ${{ inputs.env-type }}
+        INPUT_ENV_HOST: ${{ inputs.env-host }}
+        INPUT_ENV_PORT: ${{ inputs.env-port }}
+        INPUT_ENV_USER: ${{ inputs.env-user }}
+        INPUT_ENV_PASS: ${{ inputs.env-pass }}
+        INPUT_ENV_REMOTE_ROOT: ${{ inputs.env-remote-root }}
+        INPUT_ENV_LOCAL_ROOT: ${{ inputs.env-local-root }}
+        INPUT_MANIFEST: ${{ inputs.manifest }}
+      run: "${{ github.action_path }}/run.sh"
+        
 
 
