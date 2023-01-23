@@ -70,4 +70,4 @@ done < "${GITHUB_WORKSPACE}/file.manifest"
 wait
 
 ls -al "${GITHUB_WORKSPACE}/remote"
-cat "${GITHUB_WORKSPACE}/rclone.log"
+

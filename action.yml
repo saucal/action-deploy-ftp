@@ -42,7 +42,10 @@ runs:
   steps:
     - name: Setup Rclone
       shell: bash
-      run: curl https://rclone.org/install.sh | sudo bash
+      run: |
+        echo "::group::Installing rclone"
+        curl https://rclone.org/install.sh | sudo bash
+        echo "::endgroup::"
 
     - name: Run upload
       shell: bash
@@ -56,6 +59,8 @@ runs:
         INPUT_ENV_LOCAL_ROOT: ${{ inputs.env-local-root }}
         INPUT_MANIFEST: ${{ inputs.manifest }}
       run: "${{ github.action_path }}/run.sh"
-        
 
-
+    - uses: actions/upload-artifact@v3
+      with:
+        name: rclone.log
+        path: ${{ github.workspace }}/rclone.log
