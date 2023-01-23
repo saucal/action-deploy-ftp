@@ -71,3 +71,4 @@ wait
 
 ls -al "${GITHUB_WORKSPACE}/remote"
 
+fusermount -u "${GITHUB_WORKSPACE}/remote"
