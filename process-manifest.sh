@@ -3,6 +3,7 @@
 function maybe_skip() {
 	if [ ! -d "${GITHUB_WORKSPACE}/remote-ignore" ]; then
 		mkdir -p "${GITHUB_WORKSPACE}/remote-ignore"
+		git --bare init "${GITHUB_WORKSPACE}/remote-ignore/.git"
 		echo "$INPUT_FORCE_IGNORE" > "${GITHUB_WORKSPACE}/remote-ignore/.gitignore"
 	fi
 	git --work-tree="${GITHUB_WORKSPACE}/remote-ignore" check-ignore -q --no-index "$1"
