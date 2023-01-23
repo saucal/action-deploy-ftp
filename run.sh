@@ -1,4 +1,5 @@
-#!/bin/bash
+#!/usr/bin/env bash
+
 SECURE_PASS=$(echo "${INPUT_ENV_PASS}" | rclone obscure -)
 
 mkdir -p "$HOME/.config/rclone"
