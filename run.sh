@@ -37,23 +37,67 @@ rm -f "${GITHUB_WORKSPACE}/file.manifest_input"
 
 function process_line() {
 	line="$1"
+	echo "$line"
+	return;
 	operation="${line::1}"
 	file="${line:2}"
-	if [ "${operation}" == "+" ]; then
-		dir=$(dirname "${GITHUB_WORKSPACE}/remote/${file}")
+	if [ "${operation}" == "*" ]; then
+		dir="${GITHUB_WORKSPACE}/remote/${file}"
 		if [ ! -d "${dir}" ]; then
 			echo "mkdir -p '${dir}'"
 			mkdir -p "${dir}"
 		fi
+	elif [ "${operation}" == "+" ]; then
 		echo "cp -f '${INPUT_ENV_LOCAL_ROOT}/${file}' '${GITHUB_WORKSPACE}/remote/${file}'"
 		cp -f "${INPUT_ENV_LOCAL_ROOT}/${file}" "${GITHUB_WORKSPACE}/remote/${file}"
-	else
+	elif [ "${operation}" == "-" ]; then
 		echo "rm -f '${GITHUB_WORKSPACE}/remote/${file}'"
 		rm -f "${GITHUB_WORKSPACE}/remote/${file}"
-		
+	elif [ "${operation}" == "_" ]; then
+		echo "dircleanup -f '${file}'"
 		## TODO: Recurse into removing empty directories
 	fi
 }
+
+declare -A pathsToCreate
+declare -A uploads
+declare -A removals
+declare -A pathsToCleanup
+
+while read -r line; do
+	operation="${line::1}"
+	file="${line:2}"
+	path="$(dirname "${file}")"
+	if [ "${operation}" == "+" ]; then
+		if [ "$path" != '.' ]; then
+			pathsToCreate[$path]=0
+		fi
+		uploads[$file]=0
+	elif [ "${operation}" == "-" ]; then
+		if [ "$path" != '.' ]; then
+			pathsToCleanup[$path]=0
+		fi
+		removals[$file]=0
+	fi
+done < "${GITHUB_WORKSPACE}/file.manifest"
+
+rm -f "${GITHUB_WORKSPACE}/file.manifest"
+
+for dir in "${!pathsToCreate[@]}"; do
+	echo "* ${dir}" >> "${GITHUB_WORKSPACE}/file.manifest"
+done
+
+for file in "${!uploads[@]}"; do
+	echo "+ ${file}" >> "${GITHUB_WORKSPACE}/file.manifest"
+done
+
+for file in "${!removals[@]}"; do
+	echo "- ${file}" >> "${GITHUB_WORKSPACE}/file.manifest"
+done
+
+for dir in "${!pathsToCleanup[@]}"; do
+	echo "_ ${dir}" >> "${GITHUB_WORKSPACE}/file.manifest"
+done
 
 JOBS_LIMIT=5
 
