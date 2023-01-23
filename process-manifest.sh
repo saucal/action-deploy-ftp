@@ -25,7 +25,7 @@ function process_line() {
 	fi
 }
 
-JOBS_LIMIT=5
+JOBS_LIMIT=${INPUT_CONCURRENT_CONNECTIONS}
 
 function spawn_process_line() {
 	while [ "$(jobs -rp | wc -l)" -ge $JOBS_LIMIT ]; do

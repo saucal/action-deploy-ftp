@@ -37,6 +37,10 @@ inputs:
     description: "Ignore files on deployment"
     required: false
     default: ''
+  concurrent-connections:
+    description: "Concurrent connections"
+    required: false
+    default: '20'
 runs:
   using: "composite"
   steps:
@@ -58,6 +62,7 @@ runs:
         INPUT_ENV_REMOTE_ROOT: ${{ inputs.env-remote-root }}
         INPUT_ENV_LOCAL_ROOT: ${{ inputs.env-local-root }}
         INPUT_MANIFEST: ${{ inputs.manifest }}
+        INPUT_CONCURRENT_CONNECTIONS: ${{ inputs.concurrent-connections }}
       run: "${{ github.action_path }}/run.sh"
 
     - uses: actions/upload-artifact@v3
