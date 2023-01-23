@@ -48,14 +48,16 @@ while read -r line; do
 	file="${line:2}"
 	path="$(dirname "${file}")"
 	if [ "${operation}" == "+" ]; then
-		if [ "$path" != '.' ]; then
+		while [ "$path" != '.' ]; do
 			pathsToCreate[$path]=0
-		fi
+			path="$(dirname "${path}")"
+		done
 		uploads[$file]=0
 	elif [ "${operation}" == "-" ]; then
-		if [ "$path" != '.' ]; then
+		while [ "$path" != '.' ]; do
 			pathsToCleanup[$path]=0
-		fi
+			path="$(dirname "${path}")"
+		done
 		removals[$file]=0
 	fi
 done < "${GITHUB_WORKSPACE}/file.manifest"
