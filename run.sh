@@ -98,21 +98,25 @@ for dir in "${!pathsToCreate[@]}"; do
 	spawn_process_line "* ${dir}"
 done
 wait
+echo "Finished preparing directory tree"
 
 for file in "${!uploads[@]}"; do
 	spawn_process_line "+ ${file}"
 done
 wait
+echo "Finished uploads"
 
 for file in "${!removals[@]}"; do
 	spawn_process_line "- ${file}"
 done
 wait
+echo "Finished removals"
 
 for dir in "${!pathsToCleanup[@]}"; do
 	spawn_process_line "_ ${dir}"
 done
 wait
+echo "Finished cleanup of directory tree"
 
 ls -al "${GITHUB_WORKSPACE}/remote"
 
