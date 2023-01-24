@@ -76,6 +76,10 @@ rclone mount "remote:${INPUT_ENV_REMOTE_ROOT}" "${GITHUB_WORKSPACE}/remote" --da
 
 echo "test" > "${GITHUB_WORKSPACE}/remote/file"
 
+dd if=/dev/zero of="${GITHUB_WORKSPACE}/remote/test-1M.bin" bs=1M count=1 oflag=dsync
+dd if=/dev/zero of="${GITHUB_WORKSPACE}/remote/test-10M.bin" bs=1M count=10 oflag=dsync
+dd if=/dev/zero of="${GITHUB_WORKSPACE}/remote/test-100M.bin" bs=1M count=100 oflag=dsync
+
 echo "${INPUT_MANIFEST}" > "${GITHUB_WORKSPACE}/file.manifest_input"
 
 while read -r line; do
