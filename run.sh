@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 
+if [[ "$INPUT_ENV_REMOTE_ROOT" == */ ]]; then
+	INPUT_ENV_REMOTE_ROOT="${INPUT_ENV_REMOTE_ROOT%"/"}"
+fi
+
 SECURE_PASS=$(echo "${INPUT_ENV_PASS}" | rclone obscure -)
 
 mkdir -p "$HOME/.config/rclone"
