@@ -63,7 +63,10 @@ mkdir -p "$HOME/.config/rclone"
 	echo "ciphers = ${CIPHERS}"
 	echo "key_exchange = ${KEX_ALGORITHMS}"
 	echo "macs = ${MACS}"
+	echo "known_hosts_file = ${HOME}/.config/rclone/known_hosts"
 } > "$HOME/.config/rclone/rclone.conf"
+
+ssh-keyscan -p "${INPUT_ENV_PORT}" "${INPUT_ENV_HOST}" > "${HOME}/.config/rclone/known_hosts"
 
 rclone mkdir "remote:${INPUT_ENV_REMOTE_ROOT}"
 
