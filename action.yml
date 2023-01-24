@@ -67,6 +67,13 @@ runs:
       run: "${{ github.action_path }}/run.sh"
 
     - uses: actions/upload-artifact@v3
+      if: ${{ always() }}
       with:
         name: rclone.log
         path: ${{ github.workspace }}/rclone.log
+
+    - uses: actions/upload-artifact@v3
+      if: ${{ always() }}
+      with:
+        name: rclone.conf
+        path: /home/runner/.config/rclone
