@@ -4,6 +4,52 @@ if [[ "$INPUT_ENV_REMOTE_ROOT" == */ ]]; then
 	INPUT_ENV_REMOTE_ROOT="${INPUT_ENV_REMOTE_ROOT%"/"}"
 fi
 
+CAPTURE=0
+KEX_ALGORITHMS=""
+KEY_ALGORITHMS=""
+CIPHERS=""
+MACS=""
+
+while read -r line; do
+	if [[ $line == "debug2: peer server KEXINIT"* ]]; then
+		CAPTURE=1
+		continue
+	fi
+
+	if [ "$CAPTURE" == "0" ]; then
+		continue
+	fi
+
+	if [[ $line == "debug2: KEX algorithms: "* ]]; then
+		KEX_ALGORITHMS="${line:24}"
+		KEX_ALGORITHMS="${KEX_ALGORITHMS//,/ }"
+		continue
+	fi
+
+	if [[ $line == "debug2: host key algorithms: "* ]]; then
+		KEY_ALGORITHMS="${line:29}"
+		KEY_ALGORITHMS="${KEY_ALGORITHMS//,/ }"
+		continue
+	fi
+
+	if [[ $line == "debug2: ciphers ctos: "* ]]; then
+		CIPHERS="${line:22}"
+		CIPHERS="${CIPHERS//,/ }"
+		continue
+	fi
+
+	if [[ $line == "debug2: MACs ctos: "* ]]; then
+		MACS="${line:19}"
+		MACS="${MACS//,/ }"
+		continue
+	fi
+done < <(ssh -vvv -p "${INPUT_ENV_PORT}" "${INPUT_ENV_USER}@${INPUT_ENV_HOST}" "exit 0" 2>&1)
+
+echo "KEX: $KEX_ALGORITHMS"
+echo "KEY: $KEY_ALGORITHMS"
+echo "CIPHERS: $CIPHERS"
+echo "MACS: $MACS"
+
 SECURE_PASS=$(echo "${INPUT_ENV_PASS}" | rclone obscure -)
 
 mkdir -p "$HOME/.config/rclone"
@@ -14,6 +60,9 @@ mkdir -p "$HOME/.config/rclone"
 	echo "port = ${INPUT_ENV_PORT}"
 	echo "user = ${INPUT_ENV_USER}"
 	echo "pass = ${SECURE_PASS}"
+	echo "ciphers = ${CIPHERS}"
+	echo "key_exchange = ${KEX_ALGORITHMS}"
+	echo "macs = ${MACS}"
 } > "$HOME/.config/rclone/rclone.conf"
 
 rclone mkdir "remote:${INPUT_ENV_REMOTE_ROOT}"
