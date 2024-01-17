@@ -69,4 +69,7 @@ You can push to FTP with the following basic example
     #   ignore2
     #   directory/**
     force-ignore: ""
+
+    # The amount of concurrent connections.
+    concurrent-connections: '20'
 ```
